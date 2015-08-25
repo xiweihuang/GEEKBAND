@@ -3,7 +3,6 @@
 
 #include <iostream>
 
-// Shape
 class Shape
 {
 public:
@@ -14,7 +13,7 @@ private:
 	int no;
 };
 
-// Point
+
 class Point 
 {
 public:
@@ -24,7 +23,7 @@ private:
 	int y; 
 };
 
-// Rectangle
+
 class Rectangle : public Shape
 {
 public:
@@ -35,8 +34,9 @@ public:
 		return width*height;
 	}
 
+	// 用于测试内存是否正常释放
 	~Rectangle() {
-		std::cout << "Rectangle 析构" << std::endl;
+		std::cout << "Rectangle 析构" << std::endl;  // for test
 	}
 
 private:
@@ -45,7 +45,7 @@ private:
 	Point leftUp; 
 };
 
-// Circle
+
 class Circle : public Shape
 {
 public:
@@ -57,7 +57,7 @@ public:
 	}
 
 	~Circle() {
-		std::cout << "Circle 析构" << std::endl;
+		std::cout << "Circle 析构" << std::endl;  // for test
 	}
 
 private:

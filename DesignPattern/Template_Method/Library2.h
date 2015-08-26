@@ -7,7 +7,7 @@ class Layer {
 protected:
 	// 稳定的
 	void create() {
-		printf("创建场景\n");
+		printf("\n创建场景\n");
 	}
 
 	// 变化的，一般用虚函数或纯虚函数

@@ -10,7 +10,8 @@ int main()
 
 	// SalesOrder so1(bind(&CNTax::Calculate, cnTax));
 
-	SalesOrder so1(bind(Calculate_CN));
+	// SalesOrder so1(bind(Calculate_CN));
+	SalesOrder so1(Calculate_CN);
 
 	so1.CalculateTax();
 

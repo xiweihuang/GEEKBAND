@@ -45,11 +45,13 @@ void Calculate_CN()
 
 
 typedef std::function<void()> CalculateCallback;
+// typedef void(*Func)();
 
 class SalesOrder {
 public:
 	// SalesOrder(Strategy *strategy) : _strategy(strategy) {}
 	SalesOrder(CalculateCallback cb) : calculateCb_(cb) {}
+	// SalesOrder(Func cb) : calculateCb_(cb) {}
 
 	void CalculateTax() {
 		printf("计算各国税之前的一些准备工作\n");
@@ -63,6 +65,7 @@ public:
 
 private:
 	CalculateCallback calculateCb_;
+	// Func calculateCb_;
 };
 
 

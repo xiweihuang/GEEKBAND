@@ -7,7 +7,6 @@ int main()
 {
 
 	// CNTax cnTax;
-
 	// SalesOrder so1(bind(&CNTax::Calculate, cnTax));
 
 	// SalesOrder so1(bind(Calculate_CN));

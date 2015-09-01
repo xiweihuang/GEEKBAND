@@ -4,15 +4,14 @@
 #include <string>
 #include <stdio.h>
 #include "TextBox.h"
-// #include <list>
+#include <vector>
 #include <functional>
-#include <unordered_set>
+
 
 class FileSplitter
 {
 public:
-	// typedef std::function<void(double)> FunCallback;
-	typedef void(*FunCallback)(double);
+	typedef std::function<void(double)> FunCallback;
 
 	FileSplitter(const std::string& filePath, int fileNumber)
 	: _filePath(filePath)
@@ -24,16 +23,9 @@ public:
 	// 增加观察者
 	void addObserver(FunCallback func)
 	{
-		observerCbSet_.insert(func);
+		observerVec_.push_back(func);
 	}
-	// 移除观察者
-	void removeObserver(FunCallback func)
-	{
-		if (observerCbSet_.find(func) != observerCbSet_.end())
-		{
-			observerCbSet_.erase(func);
-		}
-	}
+	
 
 	void split()
 	{
@@ -50,7 +42,7 @@ protected:
 	void onProgress(double value)
 	{
 		// 遍历所有的观察者
-		for (auto &v : observerCbSet_)
+		for (auto &v : observerVec_)
 		{
 			v(value);
 		}
@@ -60,7 +52,7 @@ private:
 	std::string _filePath;
 	int _fileNumber;
 
-	std::unordered_set<FunCallback> observerCbSet_;
+	std::vector<FunCallback> observerVec_;
 };
 
 

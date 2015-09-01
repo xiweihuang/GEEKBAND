@@ -7,13 +7,15 @@
 #include <stdio.h>
 #include <string>
 #include <stdlib.h>
+#include <list>
 
+// for test
+////////////////////////////////////////////
 class Form
 {
 public:
 	virtual ~Form() {};
 };
-
 
 class TextBox
 {
@@ -41,13 +43,15 @@ public:
 	void setValue(int v)
 	{
 		_value = v;
+		printf("value = %d\n", v);
 	}
 
 private:
 	int _value;
 };
+////////////////////////////////////////////
 
-
+// ======== 策略 =======================
 class Strategy
 {
 public:
@@ -63,95 +67,84 @@ public:
 	}
 };
 
-class FileSplitter : public Strategy
+// ======== 接口 IProgress ==============
+class IProgress
 {
 public:
-	FileSplitter(ProgressBar *proBar, std::string path, int number, Strategy *strategy)
-	: progressBar(proBar)
-	, filePath(path)
-	, fileNumber(number)
-	, _strategy(strategy)
-	{
-
-	}
-
-	// void Split(int splitType)
-	// {
-	// 	if (splitType == 1) {
-	// 		printf("切割方法1\n");
-	// 		progressBar->setValue(1);
-	// 	}
-	// 	else if (splitType == 2) {
-	// 		printf("切割方法2\n");
-	// 		progressBar->setValue(2);
-	// 	}
-	// 	else if (splitType == 3) {
-	// 		printf("切割方法3\n");
-	// 		progressBar->setValue(3);
-	// 	}
-	// }
-	void Split()
-	{
-		_strategy->splitMethod();
-	}
-
-private:
-	ProgressBar *progressBar;
-	std::string filePath;
-	int fileNumber;
-	Strategy *_strategy;
+	virtual void DoProgress(double value) = 0;
+	virtual ~IProgress() {}
 };
 
 
-class MainForm : public Form
+class FileSplitter
 {
 public:
-	// MainForm(TextBox *txt1, TextBox *txt2, ProgressBar *proBar)
-	// : txtFilePath(txt1)
-	// , txtFileNumber(txt2)
-	// , progressBar(proBar)
-	// {
+	FileSplitter(std::string path, int number, Strategy* strategy)
+	: filePath_(path)
+	, fileNumber_(number)
+	, strategy_(strategy)
+	{ }
 
-	// }
-	MainForm()
+	void addObserver(IProgress* pro)
 	{
-		txtFilePath   = new TextBox("test1");
-		txtFileNumber = new TextBox("123456");
-		progressBar   = new ProgressBar(10);
+		progressList_.push_back(pro);
 	}
 
-	// MainForm(const MainForm &mf)
-	// {
-	// 	txtFilePath   = new TextBox();
-	// 	txtFileNumber = new TextBox();
-	// 	progressBar   = new ProgressBar();
-	// }
 
-	// MainForm &operator = (const MainForm &mf)
-	// {
-	// 	txtFilePath   = new TextBox();
-	// 	txtFileNumber = new TextBox();
-	// 	progressBar   = new ProgressBar();
-	// }
-
-	~MainForm()
+	void Split()
 	{
-		delete txtFilePath;
-		delete txtFileNumber;
-		delete progressBar;
+		strategy_->splitMethod();
+		onProgress(10.0);
 	}
 
-	void Button1_Click(int type)
+protected:
+	void onProgress(double value)
 	{
-		// 先判断 txtFilePath、 txtFileNumber、 progressBar 是否为空
-		FileSplitter fsplit(progressBar, (txtFilePath->getStr()), (atoi(txtFileNumber->getStr().c_str())));
-		fsplit.Split(type);
+		for (auto &proBar : progressList_)
+		{
+			proBar->DoProgress(value);
+		}
 	}
 
 private:
-	TextBox *txtFilePath;
-	TextBox *txtFileNumber;
-	ProgressBar *progressBar;
+	std::string filePath_;
+	int fileNumber_;
+	Strategy* strategy_;
+
+	std::list<IProgress*> progressList_;
+};
+
+
+class MainForm : public Form, public IProgress
+{
+public:
+	MainForm(TextBox* txt1, TextBox* txt2, ProgressBar* proBar, Strategy* strategy)
+	: txtFilePath_(txt1)
+	, txtFileNumber_(txt2)
+	, progressBar_(proBar)
+	, strategy_(strategy)
+	{ }
+
+	virtual void DoProgress(double value)
+	{
+		if (progressBar_)
+			progressBar_->setValue(value);
+	}
+
+
+	void Button1_Click()
+	{
+		// 先判断 txtFilePath、 txtFileNumber、 progressBar 是否为空
+		FileSplitter fsplit(txtFilePath_->getStr(), atoi(txtFileNumber_->getStr().c_str()), strategy_);
+		fsplit.addObserver(this);
+		fsplit.Split(); 
+	}
+
+private:
+	TextBox* txtFilePath_;
+	TextBox* txtFileNumber_;
+	ProgressBar* progressBar_;
+	Strategy* strategy_;
 };
 
 
